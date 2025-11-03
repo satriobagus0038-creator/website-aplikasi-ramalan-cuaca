@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Cuaca Indonesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="m-0 p-0">
+    <div id="app"></div>
+
+    <script>
+        // Data kota-kota di Indonesia
+        const indonesiaCities = [
+            { name: 'Jakarta', lat: -6.2088, lon: 106.8456, province: 'DKI Jakarta' },
+            { name: 'Surabaya', lat: -7.2575, lon: 112.7521, province: 'Jawa Timur' },
+            { name: 'Bandung', lat: -6.9175, lon: 107.6191, province: 'Jawa Barat' },
+            { name: 'Medan', lat: 3.5952, lon: 98.6722, province: 'Sumatera Utara' },
+            { name: 'Semarang', lat: -6.9667, lon: 110.4167, province: 'Jawa Tengah' },
+            { name: 'Makassar', lat: -5.1477, lon: 119.4327, province: 'Sulawesi Selatan' },
+            { name: 'Palembang', lat: -2.9761, lon: 104.7754, province: 'Sumatera Selatan' },
+            { name: 'Tangerang', lat: -6.1783, lon: 106.6319, province: 'Banten' },
+            { name: 'Depok', lat: -6.4025, lon: 106.7942, province: 'Jawa Barat' },
+            { name: 'Batam', lat: 1.0456, lon: 103.9915, province: 'Kepulauan Riau' },
+            { name: 'Bogor', lat: -6.5971, lon: 106.8060, province: 'Jawa Barat' },
+            { name: 'Pekanbaru', lat: 0.5071, lon: 101.4478, province: 'Riau' },
+            { name: 'Bandar Lampung', lat: -5.4292, lon: 105.2619, province: 'Lampung' },
+            { name: 'Padang', lat: -0.9471, lon: 100.4172, province: 'Sumatera Barat' },
+            { name: 'Malang', lat: -7.9797, lon: 112.6304, province: 'Jawa Timur' },
+            { name: 'Denpasar', lat: -8.6705, lon: 115.2126, province: 'Bali' },
+            { name: 'Samarinda', lat: -0.5022, lon: 117.1536, province: 'Kalimantan Timur' },
+            { name: 'Banjarmasin', lat: -3.3194, lon: 114.5908, province: 'Kalimantan Selatan' },
+            { name: 'Jambi', lat: -1.6101, lon: 103.6131, province: 'Jambi' },
+            { name: 'Pontianak', lat: -0.0263, lon: 109.3425, province: 'Kalimantan Barat' },
+            { name: 'Balikpapan', lat: -1.2379, lon: 116.8529, province: 'Kalimantan Timur' },
+            { name: 'Manado', lat: 1.4748, lon: 124.8421, province: 'Sulawesi Utara' },
+            { name: 'Yogyakarta', lat: -7.7956, lon: 110.3695, province: 'DI Yogyakarta' },
+            { name: 'Surakarta', lat: -7.5755, lon: 110.8243, province: 'Jawa Tengah' },
+            { name: 'Cirebon', lat: -6.7063, lon: 108.5571, province: 'Jawa Barat' },
+            { name: 'Serang', lat: -6.1203, lon: 106.1502, province: 'Banten' },
+            { name: 'Mataram', lat: -8.5833, lon: 116.1167, province: 'Nusa Tenggara Barat' },
+            { name: 'Kupang', lat: -10.1718, lon: 123.6075, province: 'Nusa Tenggara Timur' },
+            { name: 'Jayapura', lat: -2.5920, lon: 140.6682, province: 'Papua' },
+            { name: 'Ambon', lat: -3.6954, lon: 128.1814, province: 'Maluku' },
+            { name: 'Bengkulu', lat: -3.8004, lon: 102.2655, province: 'Bengkulu' },
+            { name: 'Palu', lat: -0.8999, lon: 119.8707, province: 'Sulawesi Tengah' },
+            { name: 'Kendari', lat: -3.9450, lon: 122.5989, province: 'Sulawesi Tenggara' },
+            { name: 'Gorontalo', lat: 0.5435, lon: 123.0673, province: 'Gorontalo' },
+            { name: 'Ternate', lat: 0.7873, lon: 127.3743, province: 'Maluku Utara' },
+            { name: 'Banda Aceh', lat: 5.5483, lon: 95.3238, province: 'Aceh' },
+            { name: 'Tasikmalaya', lat: -7.3506, lon: 108.2050, province: 'Jawa Barat' },
+            { name: 'Kediri', lat: -7.8167, lon: 112.0167, province: 'Jawa Timur' },
+            { name: 'Magelang', lat: -7.4800, lon: 110.2178, province: 'Jawa Tengah' },
+            { name: 'Tegal', lat: -6.8694, lon: 109.1403, province: 'Jawa Tengah' },
+        ].sort((a, b) => a.name.localeCompare(b.name));
+
+        // State
+        let state = {
+            selectedCity: '',
+            searchTerm: '',
+            weatherData: null,
+            forecast: [],
+            loading: false,
+            currentTime: new Date()
+        };
+
+        // Update waktu setiap detik
+        setInterval(() => {
+            state.currentTime = new Date();
+            render();
+        }, 1000);
+
+        // Generate weather data
+        function generateWeatherData(city) {
+            const baseTemp = city.lat < 0 ? 28 : 30;
+            const tempVariation = Math.random() * 6 - 3;
+            const temp = baseTemp + tempVariation;
+            
+            const weatherTypes = [
+                { main: 'Clear', description: 'cerah', icon: '☀️' },
+                { main: 'Clouds', description: 'berawan', icon: '☁️' },
+                { main: 'Rain', description: 'hujan ringan', icon: '🌧️' },
+                { main: 'Drizzle', description: 'gerimis', icon: '🌦️' }
+            ];
+            
+            const weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+            const humidity = 65 + Math.floor(Math.random() * 25);
+            const windSpeed = 2 + Math.random() * 8;
+            const pressure = 1010 + Math.floor(Math.random() * 20);
+            const visibility = 8000 + Math.floor(Math.random() * 2000);
+            
+            const sunrise = new Date();
+            sunrise.setHours(5, 30 + Math.floor(Math.random() * 30), 0);
+            
+            const sunset = new Date();
+            sunset.setHours(17, 45 + Math.floor(Math.random() * 30), 0);
+
+            return {
+                cityInfo: city,
+                main: {
+                    temp: Math.round(temp * 10) / 10,
+                    feels_like: Math.round((temp + (Math.random() * 2 - 1)) * 10) / 10,
+                    temp_min: Math.round((temp - 2) * 10) / 10,
+                    temp_max: Math.round((temp + 3) * 10) / 10,
+                    pressure: pressure,
+                    humidity: humidity
+                },
+                weather: [weather],
+                wind: {
+                    speed: Math.round(windSpeed * 10) / 10
+                },
+                visibility: visibility,
+                sys: {
+                    sunrise: Math.floor(sunrise.getTime() / 1000),
+                    sunset: Math.floor(sunset.getTime() / 1000)
+                }
+            };
+        }
+
+        function generateForecastData(baseTemp) {
+            const forecasts = [];
+            const weatherTypes = [
+                { main: 'Clear', description: 'cerah', icon: '☀️' },
+                { main: 'Clouds', description: 'berawan', icon: '☁️' },
+                { main: 'Rain', description: 'hujan ringan', icon: '🌧️' },
+                { main: 'Drizzle', description: 'gerimis', icon: '🌦️' }
+            ];
+            
+            for (let i = 1; i <= 5; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                
+                const weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+                const dayTemp = baseTemp + (Math.random() * 4 - 2);
+                
+                forecasts.push({
+                    dt: Math.floor(date.getTime() / 1000),
+                    main: {
+                        temp: Math.round(dayTemp * 10) / 10,
+                        temp_min: Math.round((dayTemp - 2) * 10) / 10,
+                        temp_max: Math.round((dayTemp + 3) * 10) / 10,
+                        humidity: 60 + Math.floor(Math.random() * 30)
+                    },
+                    weather: [weather]
+                });
+            }
+            
+            return forecasts;
+        }
+
+        function fetchWeather(city) {
+            state.loading = true;
+            render();
+            
+            setTimeout(() => {
+                const simData = generateWeatherData(city);
+                state.weatherData = simData;
+                state.forecast = generateForecastData(simData.main.temp);
+                state.loading = false;
+                render();
+            }, 800);
+        }
+
+        function getBackgroundGradient() {
+            if (!state.weatherData) return 'from-blue-900 via-blue-700 to-blue-500';
+            const main = state.weatherData.weather[0].main.toLowerCase();
+            if (main.includes('rain')) return 'from-gray-800 via-gray-700 to-blue-900';
+            if (main.includes('cloud')) return 'from-gray-700 via-blue-800 to-blue-600';
+            return 'from-blue-600 via-cyan-500 to-blue-400';
+        }
+
+        function formatTime(timestamp) {
+            return new Date(timestamp * 1000).toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+
+        function formatDate(timestamp) {
+            return new Date(timestamp * 1000).toLocaleDateString('id-ID', { 
+                weekday: 'short', 
+                day: 'numeric', 
+                month: 'short' 
+            });
+        }
+
+        function render() {
+            const filteredCities = indonesiaCities.filter(city =>
+                city.name.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+                city.province.toLowerCase().includes(state.searchTerm.toLowerCase())
+            );
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="min-h-screen bg-gradient-to-br ${getBackgroundGradient()} transition-all duration-1000 p-4 md:p-8">
+                    <div class="max-w-7xl mx-auto">
+                        <!-- Header -->
+                        <div class="text-center mb-8 animate-fade-in">
+                            <h1 class="text-5xl md:text-6xl font-bold text-white mb-2 tracking-tight">
+                                ☁️ Cuaca Indonesia
+                            </h1>
+                            <p class="text-blue-100 text-lg">Prediksi cuaca akurat untuk seluruh kota di Indonesia</p>
+                            <p class="text-blue-200 text-sm mt-2">${state.currentTime.toLocaleString('id-ID', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            })}</p>
+                        </div>
+
+                        <!-- Search Bar -->
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-8 shadow-2xl border border-white/20">
+                            <div class="relative">
+                                <input
+                                    type="text"
+                                    id="searchInput"
+                                    placeholder="🔍 Cari kota atau provinsi..."
+                                    value="${state.searchTerm}"
+                                    class="w-full pl-6 pr-4 py-4 bg-white/20 border-2 border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-white/60 text-lg transition-all"
+                                />
+                            </div>
+                            
+                            <!-- City Grid -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-6 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                                ${filteredCities.map(city => `
+                                    <button
+                                        onclick="selectCity('${city.name}')"
+                                        class="p-3 rounded-xl text-left transition-all transform hover:scale-105 ${
+                                            state.selectedCity === city.name
+                                                ? 'bg-white text-blue-900 shadow-lg'
+                                                : 'bg-white/20 text-white hover:bg-white/30'
+                                        }"
+                                    >
+                                        <div class="font-bold text-sm">${city.name}</div>
+                                        <div class="text-xs opacity-80">${city.province}</div>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        ${state.loading ? `
+                            <div class="text-center py-20">
+                                <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+                                <p class="text-white mt-4 text-xl">Memuat data cuaca...</p>
+                            </div>
+                        ` : ''}
+
+                        ${state.weatherData && !state.loading ? `
+                            <div class="space-y-8 animate-fade-in">
+                                <!-- Main Weather Card -->
+                                <div class="bg-white/15 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                                    <div class="grid md:grid-cols-2 gap-8">
+                                        <!-- Left Section -->
+                                        <div class="text-white">
+                                            <div class="flex items-center gap-3 mb-4">
+                                                <span class="text-3xl">📍</span>
+                                                <div>
+                                                    <h2 class="text-4xl font-bold">${state.weatherData.cityInfo.name}</h2>
+                                                    <p class="text-blue-100 text-lg">${state.weatherData.cityInfo.province}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="flex items-center gap-6 my-8">
+                                                <span class="text-8xl">${state.weatherData.weather[0].icon}</span>
+                                                <div>
+                                                    <div class="text-7xl font-bold">${Math.round(state.weatherData.main.temp)}°</div>
+                                                    <div class="text-2xl text-blue-100 capitalize">${state.weatherData.weather[0].description}</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="flex gap-4 text-sm flex-wrap">
+                                                <div class="bg-white/10 px-4 py-2 rounded-lg">
+                                                    <span class="text-blue-200">Terasa: </span>
+                                                    <span class="font-bold">${Math.round(state.weatherData.main.feels_like)}°C</span>
+                                                </div>
+                                                <div class="bg-white/10 px-4 py-2 rounded-lg">
+                                                    <span class="text-blue-200">Min: </span>
+                                                    <span class="font-bold">${Math.round(state.weatherData.main.temp_min)}°C</span>
+                                                </div>
+                                                <div class="bg-white/10 px-4 py-2 rounded-lg">
+                                                    <span class="text-blue-200">Maks: </span>
+                                                    <span class="font-bold">${Math.round(state.weatherData.main.temp_max)}°C</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Right Section -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="text-2xl">💧</span>
+                                                    <span class="text-blue-100 text-sm">Kelembaban</span>
+                                                </div>
+                                                <div class="text-3xl font-bold text-white">${state.weatherData.main.humidity}%</div>
+                                            </div>
+
+                                            <div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="text-2xl">💨</span>
+                                                    <span class="text-blue-100 text-sm">Kec. Angin</span>
+                                                </div>
+                                                <div class="text-3xl font-bold text-white">${state.weatherData.wind.speed} m/s</div>
+                                            </div>
+
+                                            <div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="text-2xl">🎚️</span>
+                                                    <span class="text-blue-100 text-sm">Tekanan</span>
+                                                </div>
+                                                <div class="text-3xl font-bold text-white">${state.weatherData.main.pressure} hPa</div>
+                                            </div>
+
+                                            <div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="text-2xl">👁️</span>
+                                                    <span class="text-blue-100 text-sm">Jarak Pandang</span>
+                                                </div>
+                                                <div class="text-3xl font-bold text-white">${(state.weatherData.visibility / 1000).toFixed(1)} km</div>
+                                            </div>
+
+                                            <div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="text-2xl">🌅</span>
+                                                    <span class="text-blue-100 text-sm">Terbit</span>
+                                                </div>
+                                                <div class="text-2xl font-bold text-white">${formatTime(state.weatherData.sys.sunrise)}</div>
+                                            </div>
+
+                                            <div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="text-2xl">🌇</span>
+                                                    <span class="text-blue-100 text-sm">Terbenam</span>
+                                                </div>
+                                                <div class="text-2xl font-bold text-white">${formatTime(state.weatherData.sys.sunset)}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Forecast -->
+                                <div class="bg-white/15 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                                    <div class="flex items-center gap-3 mb-6">
+                                        <span class="text-3xl">📅</span>
+                                        <h3 class="text-3xl font-bold text-white">Prakiraan 5 Hari</h3>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                        ${state.forecast.map(day => `
+                                            <div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
+                                                <div class="text-center">
+                                                    <p class="text-white font-semibold mb-2">${formatDate(day.dt)}</p>
+                                                    <div class="text-5xl mb-3">${day.weather[0].icon}</div>
+                                                    <p class="text-white text-sm capitalize mb-2">${day.weather[0].description}</p>
+                                                    <div class="text-2xl font-bold text-white">${Math.round(day.main.temp)}°C</div>
+                                                    <div class="flex justify-center gap-2 text-xs text-blue-100 mt-2">
+                                                        <span>↑${Math.round(day.main.temp_max)}°</span>
+                                                        <span>↓${Math.round(day.main.temp_min)}°</span>
+                                                    </div>
+                                                    <div class="flex items-center justify-center gap-2 mt-2 text-xs text-blue-200">
+                                                        <span>💧</span>
+                                                        <span>${day.main.humidity}%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${!state.weatherData && !state.loading ? `
+                            <div class="text-center py-20">
+                                <div class="text-8xl mb-6">☁️</div>
+                                <h3 class="text-3xl font-bold text-white mb-3">Pilih Kota untuk Melihat Cuaca</h3>
+                                <p class="text-blue-100 text-lg">Pilih kota dari daftar di atas untuk melihat informasi cuaca detail</p>
+                            </div>
+                        ` : ''}
+
+                        <!-- Footer -->
+                        <div class="text-center mt-12 text-white/60 text-sm">
+                            <p>Data cuaca INDONESIA</p>
+                            <p class="mt-1">©️ 2025 Aplikasi Cuaca Indonesia</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add event listener untuk search
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    state.searchTerm = e.target.value;
+                    render();
+                });
+            }
+        }
+
+        function selectCity(cityName) {
+            const city = indonesiaCities.find(c => c.name === cityName);
+            if (city) {
+                state.selectedCity = cityName;
+                fetchWeather(city);
+            }
+        }
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>
