@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <title>Toko Spatu UNISBANK Online</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #23395d;
+      --secondary: #ff8c42;
+      --background: #f6f8fc;
+      --card-bg: #fff;
+      --shadow: 0 6px 24px rgba(35,57,93,0.11);
+    }
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: var(--background);
+      color: #2a2a2a;
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 8px 32px rgba(35,57,93,0.13);
+    }
+    header h1 { margin: 0; font-size: 2.15rem; font-weight: 700; }
+    nav { margin-top: 0.5rem;}
+    nav a {
+      color: #fff; margin: 0 1.5rem 0 0; text-decoration: none; font-weight: bold; font-size:1.08rem;
+      transition: color .2s;
+    }
+    nav a:hover { color: var(--secondary); text-decoration: underline;}
+    .container {
+      max-width: 1100px;
+      margin: 2.5rem auto 2rem auto;
+      background: var(--card-bg);
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    h2 { color: var(--primary); letter-spacing: 1px;}
+    .hidden { display: none; }
+    .marquee {
+      background: var(--secondary); color: #fff; padding:.7rem 0; text-align:center;
+      font-size: 1.07rem; letter-spacing:.5px; font-weight:500;
+    }
+    /* Carousel */
+    #carousel {
+      width:100%;max-width:800px;margin:0 auto 2.5rem;position:relative;overflow:hidden;
+      border-radius:18px;box-shadow: var(--shadow);
+      background: #e4eaf5;
+    }
+    #carousel-img {
+      width:100%;height:340px;object-fit:cover;border-radius:18px;transition:.6s;
+      box-shadow: 0 2px 16px rgba(35,57,93,0.13);
+    }
+    .carousel-caption {
+      position:absolute;bottom:30px;left:30px;background:rgba(35,57,93,0.80);color:#fff;
+      padding:1rem 1.5rem;border-radius:8px;max-width:67%;font-size:1.08rem;font-weight:500;
+      box-shadow:0 2px 14px rgba(0,0,0,0.12);
+      letter-spacing:.6px;
+    }
+    .carousel-btn {
+      position:absolute;top:50%;background:var(--primary);color:#fff;border:none;padding:10px 16px;
+      border-radius:50%;cursor:pointer;transform:translateY(-50%);font-size:1.3rem;opacity:0.92;z-index:1;
+      transition: background .2s;
+    }
+    .carousel-btn:hover { background: var(--secondary); color:var(--primary);}
+    .carousel-left { left:18px; }
+    .carousel-right { right:18px; }
+    /* Produk grid */
+    .catalog { display: flex; flex-wrap: wrap; gap: 2.2rem; justify-content: center; }
+    .product {
+      flex: 1 1 220px; max-width:260px; background: var(--card-bg); border-radius: 16px;
+      box-shadow: var(--shadow); padding: 1.3rem 1rem 1.2rem 1rem; text-align: center;
+      transition: transform 0.21s, box-shadow 0.23s; position:relative; overflow:hidden;
+      border: 1px solid #e4eaf5;
+      margin-bottom:1rem;
+    }
+    .product img {
+      width: 100%; max-width:170px;height: 170px; object-fit: cover; border-radius: 12px; margin-bottom:1rem;
+      box-shadow:0 2px 18px rgba(35,57,93,0.08);
+      transition: transform .18s;
+    }
+    .product h3 { margin:0 0 0.5rem 0; color:var(--primary); font-size:1.1rem;}
+    .product p { color:#516283; font-size:0.96rem;}
+    .product strong { color: var(--secondary); font-size:1.09rem; letter-spacing:.5px;}
+    .product .order-btn {
+      margin-top:1.05rem;background:var(--secondary);color:#fff;border:none;padding:.6rem 1.3rem;font-size:0.96rem;
+      border-radius:22px;cursor:pointer;transition:background .2s; box-shadow:0 2px 10px rgba(255,140,66,0.13);
+      font-weight: bold; letter-spacing: .3px;
+    }
+    .product .order-btn:hover { background: var(--primary); color:var(--secondary);}
+    .product:hover {
+      transform: translateY(-10px) scale(1.035);
+      box-shadow: 0 10px 36px rgba(35,57,93,0.18);
+    }
+    .product:hover img { transform: scale(1.07);}
+    /* About, Contact */
+    label { display: block; margin-top: 1.3rem; color:var(--primary);}
+    input, textarea {
+      width: 100%; padding: 0.7rem; margin-top: 0.5rem; border-radius: 6px; border: 1px solid #ccc; font-size:1rem; resize: none;
+      font-family: 'Montserrat', Arial, sans-serif;
+    }
+    button[type="submit"] {
+      background: var(--secondary); color: #fff; border: none; padding: 0.8rem 2rem; margin-top: 1.3rem; border-radius: 22px; cursor: pointer;
+      font-size:1rem;font-weight:bold; letter-spacing:.3px; transition: background .18s;
+    }
+    button[type="submit"]:hover { background: var(--primary); color:var(--secondary);}
+    /* Back to Top */
+    #backToTopBtn {
+      display: none; position: fixed; bottom: 25px; right: 25px; z-index: 99;
+      background: var(--secondary); color: #fff; border: none; padding: 1rem;
+      border-radius: 50%; font-size: 1.45rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      transition: background 0.22s;
+    }
+    #backToTopBtn:hover { background: var(--primary); color:var(--secondary);}
+    footer {
+      background: var(--primary); color: #fff; text-align: center; padding: 1.3rem; margin-top: 2.5rem;
+      letter-spacing:.6px; font-size:.98rem;
+    }
+    @media (max-width: 900px) {
+      .container { padding: 1.2rem; }
+      #carousel-img { height: 210px;}
+      .carousel-caption { font-size:.98rem; max-width:90%; left:10px; right:10px;}
+      .catalog { gap: 1.1rem;}
+      .product { max-width: 98%;}
+    }
+    @media (max-width: 600px) {
+      .catalog { flex-direction: column; gap:1.7rem;}
+      #carousel { max-width:99vw;}
+      #carousel-img { height: 160px;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Toko Sepatu UNISBANK</h1>
+    <nav>
+      <a href="#" onclick="showPage('home')">Beranda</a>
+      <a href="#" onclick="showPage('about')">About Us</a>
+      <a href="#" onclick="showPage('contact')">Contact Us</a>
+    </nav>
+  </header>
+
+  <!-- Promo berjalan -->
+  <div class="marquee">
+    <marquee behavior="scroll" direction="left" scrollamount="7">
+      ⚡ Promo Oktober! Diskon hingga 30% untuk model terbaru! | Gratis ongkir seluruh Indonesia untuk order di atas Rp 300.000! 👟
+    </marquee>
+  </div>
+
+  <div class="container">
+    <!-- Halaman Beranda -->
+    <div id="home">
+      <!-- Carousel -->
+      <div id="carousel">
+        <img id="carousel-img" src="gambar/gambar_1.webp"
+          alt="Running Shoes">
+        <div class="carousel-caption" id="carousel-caption">
+          <b>Running Shoes</b>: Sepatu lari dengan bantalan super ringan dan sol anti-slip. Cocok untuk olahraga harian dan marathon!
+        </div>
+        <button onclick="prevImage()" class="carousel-btn carousel-left">&#10094;</button>
+        <button onclick="nextImage()" class="carousel-btn carousel-right">&#10095;</button>
+      </div>
+
+      <h2 style="margin-top:2.5rem;">Katalog Produk</h2>
+      <div class="catalog">
+        <!-- Running Shoes -->
+        <div class="product">
+          <img src="gambar/gambar_1.webp" alt="Running Shoes">
+          <h3>Running Shoes</h3>
+          <p>Sepatu lari dengan bantalan super ringan dan sol anti-slip. Cocok untuk olahraga harian dan marathon.</p>
+          <strong>Rp 350.000</strong>
+          <button class="order-btn" onclick="orderNow('Running Shoes')">Order Now</button>
+        </div>
+        <!-- Sneakers -->
+        <div class="product">
+          <img src="gambar/gambar_2.jpg" alt="Sneakers">
+          <h3>Sneakers</h3>
+          <p>Sneakers kasual desain minimalis, cocok untuk hangout dan gaya santai. Banyak pilihan warna trendi!</p>
+          <strong>Rp 280.000</strong>
+          <button class="order-btn" onclick="orderNow('Sneakers')">Order Now</button>
+        </div>
+        <!-- Basketball Shoes -->
+        <div class="product">
+          <img src="gambar/gambar_3.jpg" alt="Basketball Shoes">
+          <h3>Basketball Shoes</h3>
+          <p>Sol grip tinggi & ankle support, bantu lompatan dan manuver di lapangan basket makin optimal.</p>
+          <strong>Rp 420.000</strong>
+          <button class="order-btn" onclick="orderNow('Basketball Shoes')">Order Now</button>
+        </div>
+        <!-- Slip On -->
+        <div class="product">
+          <img src="gambar/gambar_4.jfif" alt="Slip On">
+          <h3>Slip On</h3>
+          <p>Desain simpel tanpa tali, mudah dipakai dan stylish. Nyaman untuk dipakai seharian.</p>
+          <strong>Rp 230.000</strong>
+          <button class="order-btn" onclick="orderNow('Slip On')">Order Now</button>
+        </div>
+        <!-- Boots -->
+        <div class="product">
+          <img src="gambar/gambar_5.jfif" alt="Boots">
+          <h3>Boots</h3>
+          <p>Boots kulit tahan air, cocok untuk petualangan dan tampil maskulin di segala cuaca.</p>
+          <strong>Rp 500.000</strong>
+          <button class="order-btn" onclick="orderNow('Boots')">Order Now</button>
+        </div>
+        <!-- Sandals -->
+        <div class="product">
+          <img src="gambar/gambar_6.jfif" alt="Sandals">
+          <h3>Sandals</h3>
+          <p>Sandal nyaman dan ringan, anti slip untuk kegiatan santai, liburan, dan sehari-hari.</p>
+          <strong>Rp 130.000</strong>
+          <button class="order-btn" onclick="orderNow('Sandals')">Order Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Halaman About Us -->
+    <div id="about" class="hidden">
+      <h2>Tentang Shoes Store Kami</h2>
+      <p>
+        <b>Shoes Store</b> adalah toko sepatu online terpercaya dengan koleksi terlengkap dan harga terbaik. Kami menghadirkan berbagai model sepatu original untuk segala kebutuhan: olahraga, kasual, hingga formal.
+      </p>
+      <p>
+        <b>Misi kami:</b> Memberikan pengalaman belanja sepatu yang mudah, aman, dan menyenangkan untuk semua pelanggan di Indonesia.
+      </p>
+      <ul style="margin-top:2rem;color:var(--primary);font-weight:500;">
+        <li>Produk 100% original, garansi uang kembali</li>
+        <li>Gratis konsultasi ukuran dan style</li>
+        <li>Pengiriman cepat & packing aman</li>
+        <li>Pilihan pembayaran lengkap: COD, transfer, e-wallet</li>
+      </ul>
+    </div>
+
+    <!-- Halaman Contact Us -->
+    <div id="contact" class="hidden">
+      <h2>Hubungi Kami</h2>
+      <form onsubmit="event.preventDefault(); alert('Terima kasih, pesan Anda telah dikirim!'); this.reset();">
+        <label>Nama:
+          <input type="text" name="nama" required>
+        </label>
+        <label>Email:
+          <input type="email" name="email" required>
+        </label>
+        <label>Pesan:
+          <textarea name="pesan" rows="4" required></textarea>
+        </label>
+        <button type="submit">Kirim</button>
+      </form>
+      <p style="margin-top:1.8rem;color:var(--primary);">
+        <b>Atau kunjungi kami di:</b><br>
+        Jl. MUGAS No. 123, Semarang<br>
+        Telp: (022) 888-1234<br>
+        Email: info@shoesstore.com
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Shoes Store. All rights reserved.
+  </footer>
+
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    id="backToTopBtn" title="Kembali ke atas">↑</button>
+
+  <script>
+    // Navigasi halaman
+    function showPage(page) {
+      document.getElementById('home').classList.add('hidden');
+      document.getElementById('about').classList.add('hidden');
+      document.getElementById('contact').classList.add('hidden');
+      document.getElementById(page).classList.remove('hidden');
+      window.scrollTo(0,0);
+    }
+    // Carousel logic
+    const carouselData = [
+      {
+        img: "gambar/gambar_1.webp",
+        title: "Running Shoes",
+        desc: "Sepatu lari dengan bantalan super ringan dan sol anti-slip. Cocok untuk olahraga harian dan marathon!"
+      },
+      {
+        img: "gambar/gambar_2.jpg",
+        title: "Sneakers",
+        desc: "Sneakers kasual desain minimalis, cocok untuk hangout dan gaya santai. Banyak pilihan warna trendi!"
+      },
+      {
+        img: "gambar/gambar_3.jpg",
+        title: "Basketball Shoes",
+        desc: "Sol grip tinggi & ankle support, bantu lompatan dan manuver di lapangan basket makin optimal."
+      },
+      {
+        img: "gambar/gambar_5.jfif",
+        title: "Boots",
+        desc: "Boots kulit tahan air, cocok untuk petualangan dan tampil maskulin di segala cuaca."
+      },
+      {
+        img: "gambar/gambar_6.jfif",
+        title: "Sandals",
+        desc: "Sandal nyaman dan ringan, anti slip untuk kegiatan santai, liburan, dan sehari-hari."
+      }
+    ];
+    let carouselIndex = 0;
+    const carouselImg = document.getElementById('carousel-img');
+    const carouselCaption = document.getElementById('carousel-caption');
+    function showCarousel(idx) {
+      carouselImg.src = carouselData[idx].img;
+      carouselImg.alt = carouselData[idx].title;
+      carouselCaption.innerHTML = `<b>${carouselData[idx].title}</b>: ${carouselData[idx].desc}`;
+    }
+    function prevImage() {
+      carouselIndex = (carouselIndex - 1 + carouselData.length) % carouselData.length;
+      showCarousel(carouselIndex);
+    }
+    function nextImage() {
+      carouselIndex = (carouselIndex + 1) % carouselData.length;
+      showCarousel(carouselIndex);
+    }
+    setInterval(() => {
+      nextImage();
+    }, 3500);
+    // Inisialisasi pertama
+    showCarousel(carouselIndex);
+
+    // Tombol Back to Top
+    window.onscroll = function() {
+      document.getElementById("backToTopBtn").style.display =
+        (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) ? "block" : "none";
+    }
+    // Order Now alert
+    function orderNow(product) {
+      alert('Terima kasih telah memilih produk: ' + product + '!\nSilakan hubungi kami melalui Contact Us untuk pemesanan.');
+    }
+  </script>
+</body>
+</html>
